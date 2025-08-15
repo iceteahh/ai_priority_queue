@@ -99,7 +99,9 @@ go run client_sample/dequeue_client/dequeue_client.go -workers=3 -rate=4
 #### Setup and run queue_agent
 ```
 cd ai_priority_queue/ai_agents
+python3 -m venv .venv
 source .venv/bin/activate
+pip install google-adk
 ```
 
 Run queue_agent
