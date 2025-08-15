@@ -1,0 +1,43 @@
+# Health
+curl -s localhost:8080/healthz
+
+# Enqueue (uses server time)
+curl -s -X POST localhost:8080/enqueue -d '{
+  "ad": {
+    "adId":"ad_101","title":"Dragon","gameFamily":"RPG",
+    "targetAudience":["18-34"],"priority":2,"createdAt":"2025-01-01T00:00:00Z","maxWaitTime":120
+  }
+}' | jq
+
+# Enqueue with explicit time
+NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+curl -s -X POST localhost:8080/enqueue -d "{
+  \"ad\": {\"adId\":\"ad_102\",\"gameFamily\":\"Shooter\",\"priority\":1,\"maxWaitTime\":60},
+  \"enqueueAt\": \"${NOW}\"
+}" | jq
+
+# Dequeue
+curl -s -X POST localhost:8080/dequeue | jq
+
+# Peek next 5
+curl -s "localhost:8080/peek?n=5" | jq
+
+# Distribution
+curl -s localhost:8080/distribution | jq
+
+# List waiting longer than 5s (query)
+curl -s "localhost:8080/waiting?age=5s" | jq
+# Or in body
+curl -s -X GET localhost:8080/waiting -d '{"age":"5s"}' | jq
+
+# Reprioritize by family
+curl -s -X POST localhost:8080/reprioritize/family -d '{"family":"RPG","newPriority":3}' | jq
+
+# Reprioritize all items older than 30s to priority 2
+curl -s -X POST localhost:8080/reprioritize/age -d '{"age":"30s","newPriority":2}' | jq
+
+# Toggle anti-starvation
+curl -s -X POST localhost:8080/settings/antiStarvation -d '{"enable":false}' | jq
+
+# Set maximum wait cap (seconds)
+curl -s -X POST localhost:8080/settings/maximumWait -d '{"maximumWait":120}' | jq

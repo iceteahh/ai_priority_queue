@@ -1,0 +1,4 @@
+totalPriority: 3
+enableAntiStarvation: true
+maximumWaitSeconds: 600   # 10 minutes
+btreeDegree: 16

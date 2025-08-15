@@ -1,0 +1,17 @@
+# Video Processing Priority Queue
+
+A high-performance, priority-based queue implementation in Go for scheduling and processing video ads.  
+Supports multiple priorities, FIFO ordering within priorities, anti-starvation, and concurrent dequeue operations.
+
+## Features
+
+- **Priority-based processing** — Higher priority ads are processed first.
+- **FIFO within priority levels** — Items with the same priority are processed in arrival order.
+- **Anti-starvation mechanism** — Older low-priority ads can be promoted or processed to prevent indefinite waiting.
+- **Maximum wait time enforcement** — Ads can define a `MaxWaitTime` in seconds; they’ll be processed once they exceed it.
+- **Game family index** — Fast reprioritization and filtering by `GameFamily`.
+- **Time index** — Quick lookups of ads based on enqueue time.
+- **Concurrent processing** — Designed to work with multiple workers.
+- **Metrics** — Get distribution of ads by priority.
+
+## Project Structure
