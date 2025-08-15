@@ -1,8 +1,4 @@
 
-# Project Title
-
-A brief description of what this project does and who it's for
-
 # Video Processing Priority Queue
 
 A high-performance, priority-based queue implementation in Go for scheduling and processing video ads.  
@@ -418,7 +414,7 @@ Commands
 
 ## Design Decisions
 ### 1. Queue Structure
-I implemented a **multi-queue model** (one queue per priority level) with additional indexing by game family and enqueue time. And I use doubly linked list to implement the queue
+I implemented a **multi-queue model** (one queue per priority level) based on doubly linked list with additional indexing by game family and enqueue time.
 - **Why:** This allows constant-time insertion/removal while still supporting fast lookups for operations like reprioritization or “list ads waiting longer than X minutes.”  
 - **Trade-off:** Slightly higher memory usage due to maintaining multiple indices, but significantly faster targeted operations.
 
