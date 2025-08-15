@@ -2,3 +2,4 @@ totalPriority: 3
 enableAntiStarvation: true
 maximumWaitSeconds: 600   # seconds
 btreeDegree: 16
+timeBoost: 2
