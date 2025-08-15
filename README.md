@@ -435,16 +435,3 @@ A **B-tree** is used for time-based indexing of ads in the queue.
 When reprioritizing ads (by family or age), I maintain their relative order based on enqueue time.  
 - **Why:** Preserves fairness and prevents “queue jumping.”  
 - **Approach:** Items are reinserted into the target priority queue in ascending enqueue time order.
-
-
-
-
-
-
-
-
-
-
-
-
-

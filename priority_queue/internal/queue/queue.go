@@ -25,7 +25,6 @@ type PriorityDist struct {
 	Percent  float64 // 0..100
 }
 
-// VideoProcessingQueue is a multi-queue (one DList per priority) with indices.
 type VideoProcessingQueue struct {
 	mu                   sync.Mutex
 	queueMap             map[int]*DList // priority -> queue
