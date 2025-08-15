@@ -104,6 +104,13 @@ source .venv/bin/activate
 pip install google-adk
 ```
 
+Config the Api key at `queue_agent/.env`
+```
+GOOGLE_GENAI_USE_VERTEXAI=FALSE
+GOOGLE_API_KEY=AIzaSyDPX613Sa0d-uWJivoqW6h2VxgUvbjvxFM
+QUEUE_BASE_URL=http://localhost:8080
+```
+
 Run queue_agent
 
 ```
@@ -435,3 +442,5 @@ A **B-tree** is used for time-based indexing of ads in the queue.
 When reprioritizing ads (by family or age), I maintain their relative order based on enqueue time.  
 - **Why:** Preserves fairness and prevents “queue jumping.”  
 - **Approach:** Items are reinserted into the target priority queue in ascending enqueue time order.
+
+## 
