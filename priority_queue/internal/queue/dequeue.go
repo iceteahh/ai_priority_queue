@@ -28,7 +28,7 @@ func (q *VideoProcessingQueue) Dequeue() *ads.Ad {
 		head := queue.Front()
 		waited := now.Sub(head.EnqueueAt)
 		if waited >= time.Duration(head.Ad.MaxWaitTime)*time.Second {
-			score := float64(p) + waited.Seconds()/float64(q.maximumWaitTime)*q.timeBoost
+			score := float64(p) + waited.Seconds()/float64(head.Ad.MaxWaitTime)*q.timeBoost
 			if score > bestScore {
 				bestScore = score
 				selected = p
