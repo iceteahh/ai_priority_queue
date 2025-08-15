@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"icetea/priority_queue/config"
 	"icetea/priority_queue/internal/httpapi"
 	"icetea/priority_queue/internal/queue"
@@ -18,6 +19,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Log the loaded config as JSON (pretty printed)
+	if b, err := json.MarshalIndent(cfg, "", "  "); err == nil {
+		log.Printf("Loaded config:\n%s", string(b))
+	} else {
+		log.Printf("Loaded config (could not marshal): %+v", cfg)
+	}
+
 	q := queue.NewFromConfig(cfg)
 
 	h := &httpapi.Handler{Q: q}

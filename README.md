@@ -74,6 +74,7 @@ totalPriority: 3
 enableAntiStarvation: true
 maximumWaitSeconds: 600   # seconds
 btreeDegree: 16
+timeBoost: 1.5
 ```
 
 Run the queue server
@@ -83,14 +84,14 @@ go run cmd/server/server.go
 
 Run the sample enqueue_client
 ```
-go run enqueue_client/enqueue_client.go -rate=5 -total=500000
+go run client_sample/enqueue_client/enqueue_client.go -rate=5 -total=500000
 ```
 - `rate`: ads/second
 - `total`: total number of ads
 
 Run the sample dequeue_client
 ```
-go run dequeue_client/dequeue_client.go -workers=3 -rate=4
+go run client_sample/dequeue_client/dequeue_client.go -workers=3 -rate=4
 ```
 - `workers`: total number of workers
 - `rate`: ads/second
