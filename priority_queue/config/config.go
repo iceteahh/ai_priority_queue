@@ -7,10 +7,11 @@ import (
 )
 
 type Config struct {
-	TotalPriority        int  `yaml:"totalPriority"`
-	EnableAntiStarvation bool `yaml:"enableAntiStarvation"`
-	MaximumWaitSeconds   int  `yaml:"maximumWaitSeconds"`
-	BTreeDegree          int  `yaml:"btreeDegree"`
+	TotalPriority        int     `yaml:"totalPriority"`
+	EnableAntiStarvation bool    `yaml:"enableAntiStarvation"`
+	MaximumWaitSeconds   int     `yaml:"maximumWaitSeconds"`
+	BTreeDegree          int     `yaml:"btreeDegree"`
+	TimeBoost            float64 `yaml:"timeBoost"`
 }
 
 // LoadConfig reads YAML from disk.

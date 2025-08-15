@@ -36,15 +36,25 @@ type VideoProcessingQueue struct {
 	gameFamilyIndex      map[string]map[*QueueItem]struct{}
 	timeIndex            *btree.BTree // ordered by EnqueueAt
 	nextSeq              int64
+	timeBoost            float64
 }
 
 // New creates a new queue. maximumWait caps per-ad MaxWaitTime.
-func New(totalPriority int, enableStarvation bool, maximumWait int, btreeDegree int) *VideoProcessingQueue {
+func New(
+	totalPriority int,
+	enableStarvation bool,
+	maximumWait int,
+	btreeDegree int,
+	timeBoost float64,
+) *VideoProcessingQueue {
 	if totalPriority <= 0 {
 		totalPriority = 2
 	}
 	if btreeDegree <= 0 {
 		btreeDegree = 16
+	}
+	if timeBoost <= 0 {
+		timeBoost = 1
 	}
 	priorities := make([]int, totalPriority)
 	for i := 0; i < totalPriority; i++ {
@@ -58,6 +68,7 @@ func New(totalPriority int, enableStarvation bool, maximumWait int, btreeDegree 
 		maximumWaitTime:      maximumWait,
 		gameFamilyIndex:      make(map[string]map[*QueueItem]struct{}),
 		timeIndex:            btree.New(btreeDegree),
+		timeBoost:            timeBoost,
 	}
 }
 
@@ -67,6 +78,7 @@ func NewFromConfig(cfg config.Config) *VideoProcessingQueue {
 		cfg.EnableAntiStarvation,
 		cfg.MaximumWaitSeconds,
 		cfg.BTreeDegree,
+		cfg.TimeBoost,
 	)
 }
 

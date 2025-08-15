@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"icetea/priority_queue/config"
 	"icetea/priority_queue/internal/ads"
 )
 
@@ -44,7 +45,14 @@ func peekIDs(q *VideoProcessingQueue, k int) []string {
 // This test reveals incorrect behavior if the code inserts AFTER head
 // when the new node should be at the very front (earliest time).
 func TestInsertIntoPriorityByTime_ShouldGoToFrontWhenEarlier(t *testing.T) {
-	q := New(5, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        5,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	base := time.Now().Add(-1 * time.Hour)
 
 	// Existing same-priority items at P=4 with times T0 < T1
@@ -77,7 +85,14 @@ func TestInsertIntoPriorityByTime_ShouldGoToFrontWhenEarlier(t *testing.T) {
 // If you iterate the map[*QueueItem]struct{} directly, order can scramble.
 // This test expects stable ascending-by-time order after reprioritization.
 func TestReprioritizeByGameFamily_OrderShouldBeStableByTime(t *testing.T) {
-	q := New(5, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        5,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	base := time.Now().Add(-2 * time.Hour)
 
 	// Three items of the same family F, scattered across priorities and times.
@@ -107,7 +122,14 @@ func TestReprioritizeByGameFamily_OrderShouldBeStableByTime(t *testing.T) {
 
 // === 3) Anti-starvation: lower priority should preempt when it exceeds MaxWaitTime ===
 func TestDequeue_AntiStarvationPreempts(t *testing.T) {
-	q := New(3, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        3,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	now := time.Now()
 
 	// High priority fresh
@@ -126,7 +148,14 @@ func TestDequeue_AntiStarvationPreempts(t *testing.T) {
 
 // === 4) PeekNext should mirror Dequeue sequence (non-mutating) ===
 func TestPeekNext_MatchesDequeue(t *testing.T) {
-	q := New(3, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        3,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	base := time.Now().Add(-30 * time.Minute)
 
 	ids := []string{"A1", "A2", "B1", "C1", "C2", "C3"}
@@ -148,7 +177,14 @@ func TestPeekNext_MatchesDequeue(t *testing.T) {
 
 // === 5) ListWaitingLongerThan should return exactly those older than cutoff ===
 func TestListWaitingLongerThan(t *testing.T) {
-	q := New(3, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        3,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	now := time.Now()
 
 	old := newAd("OLD", "A", 2, 600)
@@ -168,7 +204,14 @@ func TestListWaitingLongerThan(t *testing.T) {
 
 // === 6) SetMaximumWaitTime caps existing items ===
 func TestSetMaximumWaitTime_CapsExisting(t *testing.T) {
-	q := New(3, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        3,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	a := newAd("A", "K", 2, 10_000) // very large
 	q.EnqueueWithTime(a, time.Now())
 
@@ -180,7 +223,14 @@ func TestSetMaximumWaitTime_CapsExisting(t *testing.T) {
 
 // === 7) ReprioritizeByAgeOlderThan keeps ascending time order among moved items ===
 func TestReprioritizeByAgeOlderThan_OrderStable(t *testing.T) {
-	q := New(5, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        5,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	now := time.Now().Add(-2 * time.Hour)
 
 	// Mixed ages: O1,O2 older; N1,N2 newer
@@ -212,7 +262,14 @@ func TestReprioritizeByAgeOlderThan_OrderStable(t *testing.T) {
 
 // === 8) After Dequeue, indices should no longer expose the item ===
 func TestIndicesMaintenance_AfterDequeue(t *testing.T) {
-	q := New(3, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        3,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	now := time.Now().Add(-10 * time.Minute)
 
 	a := newAd("A", "Fam", 2, 600)
@@ -238,7 +295,14 @@ func TestIndicesMaintenance_AfterDequeue(t *testing.T) {
 
 // === 9) Stable tie-breaking when EnqueueAt equal (uses seq for index, list order for FIFO) ===
 func TestStableOrdering_SameEnqueueAt(t *testing.T) {
-	q := New(3, false, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        3,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	t0 := time.Now().Add(-1 * time.Hour)
 
 	a1 := newAd("A1", "T", 3, 600)
@@ -261,7 +325,14 @@ func TestStableOrdering_SameEnqueueAt(t *testing.T) {
 
 // === 10) DistributionByPriority sanity ===
 func TestDistributionByPriority(t *testing.T) {
-	q := New(4, true, 600, 16)
+	queueConfig := config.Config{
+		TotalPriority:        4,
+		EnableAntiStarvation: true,
+		MaximumWaitSeconds:   600,
+		BTreeDegree:          16,
+		TimeBoost:            2,
+	}
+	q := NewFromConfig(queueConfig)
 	base := time.Now().Add(-10 * time.Minute)
 
 	q.EnqueueWithTime(newAd("P4a", "D", 4, 600), base)
