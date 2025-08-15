@@ -1,0 +1,287 @@
+{
+  "info": {
+    "name": "Priority Queue HTTP API",
+    "_postman_id": "0fe634aa-b75d-4378-ba2b-ceafd9db9026",
+    "description": "Postman collection for the Priority Queue service.\nIncludes health, enqueue/dequeue, peek, distribution, waiting filters,\nreprioritization, and settings endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/healthz",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "healthz"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Enqueue (server time)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ad\": {\n    \"adId\": \"ad_101\",\n    \"title\": \"Dragon\",\n    \"gameFamily\": \"RPG\",\n    \"targetAudience\": [\n      \"18-34\"\n    ],\n    \"priority\": 2,\n    \"createdAt\": \"2025-01-01T00:00:00Z\",\n    \"maxWaitTime\": 120\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enqueue",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "enqueue"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Enqueue with explicit time",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ad\": {\n    \"adId\": \"ad_102\",\n    \"gameFamily\": \"Shooter\",\n    \"priority\": 1,\n    \"maxWaitTime\": 60\n  },\n  \"enqueueAt\": \"{{$isoTimestamp}}\"\n}\n"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enqueue",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "enqueue"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Dequeue",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/dequeue",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "dequeue"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Peek next 5",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/peek?n=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "peek"
+          ],
+          "query": [
+            {
+              "key": "n",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Distribution",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/distribution",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "distribution"
+          ]
+        }
+      }
+    },
+    {
+      "name": "List waiting longer than 5s (query)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/waiting?age=5s",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "waiting"
+          ],
+          "query": [
+            {
+              "key": "age",
+              "value": "5s"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "List waiting (body)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"age\": \"5s\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/waiting",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "waiting"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reprioritize by family",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"family\": \"RPG\",\n  \"newPriority\": 3\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reprioritize/family",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reprioritize",
+            "family"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reprioritize by age (>=30s to priority 2)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"age\": \"30s\",\n  \"newPriority\": 2\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reprioritize/age",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reprioritize",
+            "age"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Toggle anti-starvation (disable)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"enable\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/settings/antiStarvation",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "settings",
+            "antiStarvation"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Set maximum wait cap (120s)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"maximumWait\": 120\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/settings/maximumWait",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "settings",
+            "maximumWait"
+          ]
+        }
+      }
+    }
+  ]
+}
