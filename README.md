@@ -429,9 +429,24 @@ I implemented a **multi-queue model** (one queue per priority level) based on do
 - **Trade-off:** Slightly higher memory usage due to maintaining multiple indices, but significantly faster targeted operations.
 
 ### 2. Anti-Starvation Mechanism
-I designed an **anti-starvation policy** that dynamically adjusts selection based on wait time vs. priority.  
+I designed an **anti-starvation policy** that dynamically adjusts selection based on wait time vs. priority.
 - **Why:** Without this, lower-priority ads could wait indefinitely if higher-priority ads keep arriving.  
 - **Approach:** I use a formula combining base priority and waited time to determine the next dequeue candidate.
+
+#### Anti-Starvation Scoring Formula
+
+When selecting the next ad to dequeue, the queue uses a **score-based selection** to balance **priority** and **wait time**.
+
+The score is calculated as:
+
+```
+score = priority + waited/maxWaitTime * timeBoost
+```
+- **priority** — the ad’s assigned priority (higher means more important).
+- **waited** — the amount of time the ad has been waiting in the queue.
+- **maxWaitTime** — the maximum time this ad is allowed to wait before being processed.
+- **timeBoost** — a configurable weight that controls how strongly wait time impacts the score.
+
 
 ### 3. Time Index with B-Tree
 A **B-tree** is used for time-based indexing of ads in the queue.  
@@ -442,5 +457,3 @@ A **B-tree** is used for time-based indexing of ads in the queue.
 When reprioritizing ads (by family or age), I maintain their relative order based on enqueue time.  
 - **Why:** Preserves fairness and prevents “queue jumping.”  
 - **Approach:** Items are reinserted into the target priority queue in ascending enqueue time order.
-
-## 
